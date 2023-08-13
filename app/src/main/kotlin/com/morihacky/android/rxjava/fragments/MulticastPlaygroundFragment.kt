@@ -7,21 +7,19 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.OnClick
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import androidx.fragment.app.Fragment
 import com.jakewharton.rx.replayingShare
 import com.morihacky.android.rxjava.R
+import com.morihacky.android.rxjava.databinding.FragmentMulticastPlaygroundBinding
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
-class MulticastPlaygroundFragment : BaseFragment() {
+class MulticastPlaygroundFragment : Fragment() {
 
-    @BindView(R.id.list_threading_log) lateinit var logList: ListView
-    @BindView(R.id.dropdown) lateinit var pickOperatorDD: Spinner
-    @BindView(R.id.msg_text) lateinit var messageText: TextView
+    private lateinit var binding: FragmentMulticastPlaygroundBinding
 
     private lateinit var sharedObservable: Observable<Long>
     private lateinit var adapter: LogAdapter
@@ -30,67 +28,80 @@ class MulticastPlaygroundFragment : BaseFragment() {
     private var disposable1: Disposable? = null
     private var disposable2: Disposable? = null
 
-    override fun onCreateView(inflater: LayoutInflater?,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val layout = inflater!!.inflate(R.layout.fragment_multicast_playground, container, false)
-        ButterKnife.bind(this, layout)
 
-        _setupLogger()
-        _setupDropdown()
-
-        return layout
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentMulticastPlaygroundBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    @OnClick(R.id.btn_1)
-    fun onBtn1Click() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupLogger()
+        setupDropdown()
+        initListeners();
+    }
 
+    private fun initListeners() {
+        binding.btn1.setOnClickListener {
+            onBtn1Click()
+        }
+        binding.btn2.setOnClickListener {
+            onBtn2Click()
+        }
+        binding.btn3.setOnClickListener {
+            onBtn3Click()
+        }
+    }
+
+
+    private fun onBtn1Click() {
         disposable1?.let {
             it.dispose()
-            _log("subscriber 1 disposed")
+            log("subscriber 1 disposed")
             disposable1 = null
             return
         }
-
-        disposable1 =
-                sharedObservable
-                        .doOnSubscribe { _log("subscriber 1 (subscribed)") }
-                        .subscribe({ long -> _log("subscriber 1: onNext $long") })
+        disposable1 = sharedObservable
+            .doOnSubscribe { log("subscriber 1 (subscribed)") }
+            .subscribe { long -> log("subscriber 1: onNext $long") }
 
     }
 
-    @OnClick(R.id.btn_2)
-    fun onBtn2Click() {
+
+    private fun onBtn2Click() {
         disposable2?.let {
             it.dispose()
-            _log("subscriber 2 disposed")
+            log("subscriber 2 disposed")
             disposable2 = null
             return
         }
 
         disposable2 =
-                sharedObservable
-                        .doOnSubscribe { _log("subscriber 2 (subscribed)") }
-                        .subscribe({ long -> _log("subscriber 2: onNext $long") })
+            sharedObservable
+                .doOnSubscribe { log("subscriber 2 (subscribed)") }
+                .subscribe { long -> log("subscriber 2: onNext $long") }
     }
 
-    @OnClick(R.id.btn_3)
-    fun onBtn3Click() {
-        logs = ArrayList<String>()
+
+    private fun onBtn3Click() {
+        logs = ArrayList()
         adapter.clear()
     }
 
     // -----------------------------------------------------------------------------------
     // Method that help wiring up the example (irrelevant to RxJava)
 
-    private fun _log(logMsg: String) {
+    private fun log(logMsg: String) {
 
-        if (_isCurrentlyOnMainThread()) {
-            logs.add(0, logMsg + " (main thread) ")
+        if (isCurrentlyOnMainThread()) {
+            logs.add(0, "$logMsg (main thread) ")
             adapter.clear()
             adapter.addAll(logs)
         } else {
-            logs.add(0, logMsg + " (NOT main thread) ")
+            logs.add(0, "$logMsg (NOT main thread) ")
 
             // You can only do below stuff on main thread.
             Handler(Looper.getMainLooper()).post {
@@ -100,67 +111,76 @@ class MulticastPlaygroundFragment : BaseFragment() {
         }
     }
 
-    private fun _setupLogger() {
+    private fun setupLogger() {
         logs = ArrayList<String>()
-        adapter = LogAdapter(activity, ArrayList<String>())
-        logList.adapter = adapter
+        adapter = LogAdapter(activity!!, ArrayList())
+        binding.listThreadingLog.adapter = adapter
     }
 
-    private fun _setupDropdown() {
-        pickOperatorDD.adapter = ArrayAdapter<String>(context,
-                android.R.layout.simple_spinner_dropdown_item,
-                arrayOf(".publish().refCount()",
-                        ".publish().autoConnect(2)",
-                        ".replay(1).autoConnect(2)",
-                        ".replay(1).refCount()",
-                        ".replayingShare()"))
+    private fun setupDropdown() {
+        binding.dropdown.adapter = ArrayAdapter<String>(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            arrayOf(
+                ".publish().refCount()",
+                ".publish().autoConnect(2)",
+                ".replay(1).autoConnect(2)",
+                ".replay(1).refCount()",
+                ".replayingShare()"
+            )
+        )
 
 
-        pickOperatorDD.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.dropdown.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, index: Int, p3: Long) {
 
                 val sourceObservable = Observable.interval(0L, 3, TimeUnit.SECONDS)
-                        .doOnSubscribe { _log("observer (subscribed)") }
-                        .doOnDispose { _log("observer (disposed)") }
-                        .doOnTerminate { _log("observer (terminated)") }
+                    .doOnSubscribe { log("observer (subscribed)") }
+                    .doOnDispose { log("observer (disposed)") }
+                    .doOnTerminate { log("observer (terminated)") }
 
                 sharedObservable =
-                        when (index) {
-                            0 -> {
-                                messageText.setText(R.string.msg_demo_multicast_publishRefCount)
-                                sourceObservable.publish().refCount()
-                            }
-                            1 -> {
-                                messageText.setText(R.string.msg_demo_multicast_publishAutoConnect)
-                                sourceObservable.publish().autoConnect(2)
-                            }
-                            2 -> {
-                                messageText.setText(R.string.msg_demo_multicast_replayAutoConnect)
-                                sourceObservable.replay(1).autoConnect(2)
-                            }
-                            3 -> {
-                                messageText.setText(R.string.msg_demo_multicast_replayRefCount)
-                                sourceObservable.replay(1).refCount()
-                            }
-                            4 -> {
-                                messageText.setText(R.string.msg_demo_multicast_replayingShare)
-                                sourceObservable.replayingShare()
-                            }
-                            else -> throw RuntimeException("got to pick an op yo!")
+                    when (index) {
+                        0 -> {
+                            binding.msgText.setText(R.string.msg_demo_multicast_publishRefCount)
+                            sourceObservable.publish().refCount()
                         }
+
+                        1 -> {
+                            binding.msgText.setText(R.string.msg_demo_multicast_publishAutoConnect)
+                            sourceObservable.publish().autoConnect(2)
+                        }
+
+                        2 -> {
+                            binding.msgText.setText(R.string.msg_demo_multicast_replayAutoConnect)
+                            sourceObservable.replay(1).autoConnect(2)
+                        }
+
+                        3 -> {
+                            binding.msgText.setText(R.string.msg_demo_multicast_replayRefCount)
+                            sourceObservable.replay(1).refCount()
+                        }
+
+                        4 -> {
+                            binding.msgText.setText(R.string.msg_demo_multicast_replayingShare)
+                            sourceObservable.replayingShare()
+                        }
+
+                        else -> throw RuntimeException("got to pick an op yo!")
+                    }
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
     }
 
-    private fun _isCurrentlyOnMainThread(): Boolean {
+    private fun isCurrentlyOnMainThread(): Boolean {
         return Looper.myLooper() == Looper.getMainLooper()
     }
 
     private inner class LogAdapter(context: Context, logs: List<String>) :
-            ArrayAdapter<String>(context, R.layout.item_log, R.id.item_log, logs)
+        ArrayAdapter<String>(context, R.layout.item_log, R.id.item_log, logs)
 
 }
 

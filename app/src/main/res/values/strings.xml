@@ -19,7 +19,6 @@
     <string name="btn_demo_timing">Variations of timing/intervals/delays</string>
     <string name="btn_demo_exponential_backoff">Exponential backoff</string>
     <string name="btn_demo_rotation_persist">Rotation persist</string>
-    <string name="btn_demo_volley">Volley request demo</string>
     <string name="btn_demo_pagination">Paging example</string>
     <string name="btn_demo_pagination_more">MOAR</string>
     <string name="btn_demo_networkDetector">Network Detector (Subject)</string>

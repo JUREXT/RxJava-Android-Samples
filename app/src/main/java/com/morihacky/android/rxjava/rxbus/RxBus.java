@@ -6,7 +6,7 @@ import com.jakewharton.rxrelay2.Relay;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 
-/** courtesy: https://gist.github.com/benjchristensen/04eef9ca0851f3a5d7bf */
+/** courtesy: <a href="https://gist.github.com/benjchristensen/04eef9ca0851f3a5d7bf">...</a> */
 public class RxBus {
 
   private final Relay<Object> _bus = PublishRelay.create().toSerialized();

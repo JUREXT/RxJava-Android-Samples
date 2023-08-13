@@ -1,37 +1,47 @@
 package com.morihacky.android.rxjava.rxbus;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import butterknife.ButterKnife;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.morihacky.android.rxjava.R;
-import com.morihacky.android.rxjava.fragments.BaseFragment;
+import com.morihacky.android.rxjava.databinding.FragmentRxbusDemoBinding;
 
-public class RxBusDemoFragment extends BaseFragment {
+public class RxBusDemoFragment extends Fragment {
 
-  @Override
-  public View onCreateView(
-      LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-    View layout = inflater.inflate(R.layout.fragment_rxbus_demo, container, false);
-    ButterKnife.bind(this, layout);
-    return layout;
-  }
+    private FragmentRxbusDemoBinding binding;
 
-  @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentRxbusDemoBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
-    getActivity()
-        .getSupportFragmentManager()
-        .beginTransaction()
-        .replace(R.id.demo_rxbus_frag_1, new RxBusDemo_TopFragment())
-        .replace(R.id.demo_rxbus_frag_2, new RxBusDemo_Bottom3Fragment())
-        //.replace(R.id.demo_rxbus_frag_2, new RxBusDemo_Bottom2Fragment())
-        //.replace(R.id.demo_rxbus_frag_2, new RxBusDemo_Bottom1Fragment())
-        .commit();
-  }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 
-  public static class TapEvent {}
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.demo_rxbus_frag_1, new RxBusDemo_TopFragment())
+                .replace(R.id.demo_rxbus_frag_2, new RxBusDemo_Bottom3Fragment())
+                //.replace(R.id.demo_rxbus_frag_2, new RxBusDemo_Bottom2Fragment())
+                //.replace(R.id.demo_rxbus_frag_2, new RxBusDemo_Bottom1Fragment())
+                .commit();
+    }
+
+    public static class TapEvent {
+    }
 }

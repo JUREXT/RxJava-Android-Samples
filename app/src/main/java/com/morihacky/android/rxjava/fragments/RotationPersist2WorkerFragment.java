@@ -2,7 +2,10 @@ package com.morihacky.android.rxjava.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
 import com.morihacky.android.rxjava.MainActivity;
 import io.reactivex.Flowable;
 import io.reactivex.processors.PublishProcessor;
@@ -24,18 +27,19 @@ public class RotationPersist2WorkerFragment extends Fragment {
    * <p>See {@link MainActivity#onBackPressed()}
    */
   @Override
-  public void onAttach(Context context) {
+  public void onAttach(@NonNull Context context) {
     super.onAttach(context);
 
-    _masterFrag =
-        (RotationPersist2Fragment)
-            ((MainActivity) context)
-                .getSupportFragmentManager()
-                .findFragmentByTag(RotationPersist2Fragment.TAG);
-
-    if (_masterFrag == null) {
-      throw new ClassCastException("We did not find a master who can understand us :(");
-    }
+    // TODO: Fix
+//    _masterFrag =
+//        (RotationPersist2Fragment)
+//            ((MainActivity) context)
+//                .getSupportFragmentManager()
+//                .findFragmentByTag(RotationPersist2Fragment.TAG);
+//
+//    if (_masterFrag == null) {
+//      throw new ClassCastException("We did not find a master who can understand us :(");
+//    }
   }
 
   /** This method will only be called once when the retained Fragment is first created. */

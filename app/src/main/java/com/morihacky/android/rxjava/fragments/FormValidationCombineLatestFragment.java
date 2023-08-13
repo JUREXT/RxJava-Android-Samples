@@ -4,120 +4,105 @@ import static android.text.TextUtils.isEmpty;
 import static android.util.Patterns.EMAIL_ADDRESS;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.morihacky.android.rxjava.R;
+import com.morihacky.android.rxjava.databinding.FragmentFormValidationCombLatestBinding;
+
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.subscribers.DisposableSubscriber;
 import timber.log.Timber;
 
-public class FormValidationCombineLatestFragment extends BaseFragment {
+public class FormValidationCombineLatestFragment extends Fragment {
 
-  @BindView(R.id.btn_demo_form_valid)
-  TextView _btnValidIndicator;
+    private FragmentFormValidationCombLatestBinding binding;
 
-  @BindView(R.id.demo_combl_email)
-  EditText _email;
+    private DisposableSubscriber<Boolean> _disposableObserver = null;
+    private Flowable<CharSequence> _emailChangeObservable;
+    private Flowable<CharSequence> _numberChangeObservable;
+    private Flowable<CharSequence> _passwordChangeObservable;
 
-  @BindView(R.id.demo_combl_password)
-  EditText _password;
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentFormValidationCombLatestBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
-  @BindView(R.id.demo_combl_num)
-  EditText _number;
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        _emailChangeObservable = RxTextView.textChanges(binding.demoComblEmail).skip(1).toFlowable(BackpressureStrategy.LATEST);
+        _passwordChangeObservable = RxTextView.textChanges(binding.demoComblPassword).skip(1).toFlowable(BackpressureStrategy.LATEST);
+        _numberChangeObservable = RxTextView.textChanges(binding.demoComblNum).skip(1).toFlowable(BackpressureStrategy.LATEST);
+        _combineLatestEvents();
+    }
 
-  private DisposableSubscriber<Boolean> _disposableObserver = null;
-  private Flowable<CharSequence> _emailChangeObservable;
-  private Flowable<CharSequence> _numberChangeObservable;
-  private Flowable<CharSequence> _passwordChangeObservable;
-  private Unbinder unbinder;
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        _disposableObserver.dispose();
+    }
 
-  @Override
-  public View onCreateView(
-      LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-    View layout = inflater.inflate(R.layout.fragment_form_validation_comb_latest, container, false);
-    unbinder = ButterKnife.bind(this, layout);
+    private void _combineLatestEvents() {
 
-    _emailChangeObservable =
-        RxTextView.textChanges(_email).skip(1).toFlowable(BackpressureStrategy.LATEST);
-    _passwordChangeObservable =
-        RxTextView.textChanges(_password).skip(1).toFlowable(BackpressureStrategy.LATEST);
-    _numberChangeObservable =
-        RxTextView.textChanges(_number).skip(1).toFlowable(BackpressureStrategy.LATEST);
+        _disposableObserver =
+                new DisposableSubscriber<Boolean>() {
+                    @Override
+                    public void onNext(Boolean formValid) {
+                        if (formValid) {
+                            binding.btnDemoFormValid.setBackgroundColor(
+                                    ContextCompat.getColor(requireContext(), R.color.blue));
+                        } else {
+                            binding.btnDemoFormValid.setBackgroundColor(
+                                    ContextCompat.getColor(requireContext(), R.color.gray));
+                        }
+                    }
 
-    _combineLatestEvents();
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e, "there was an error");
+                    }
 
-    return layout;
-  }
+                    @Override
+                    public void onComplete() {
+                        Timber.d("completed");
+                    }
+                };
 
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
-    unbinder.unbind();
-    _disposableObserver.dispose();
-  }
+        Flowable.combineLatest(
+                        _emailChangeObservable,
+                        _passwordChangeObservable,
+                        _numberChangeObservable,
+                        (newEmail, newPassword, newNumber) -> {
+                            boolean emailValid = !isEmpty(newEmail) && EMAIL_ADDRESS.matcher(newEmail).matches();
+                            if (!emailValid) {
+                                binding.demoComblEmail.setError("Invalid Email!");
+                            }
 
-  private void _combineLatestEvents() {
+                            boolean passValid = !isEmpty(newPassword) && newPassword.length() > 8;
+                            if (!passValid) {
+                                binding.demoComblPassword.setError("Invalid Password!");
+                            }
 
-    _disposableObserver =
-        new DisposableSubscriber<Boolean>() {
-          @Override
-          public void onNext(Boolean formValid) {
-            if (formValid) {
-              _btnValidIndicator.setBackgroundColor(
-                  ContextCompat.getColor(getContext(), R.color.blue));
-            } else {
-              _btnValidIndicator.setBackgroundColor(
-                  ContextCompat.getColor(getContext(), R.color.gray));
-            }
-          }
-
-          @Override
-          public void onError(Throwable e) {
-            Timber.e(e, "there was an error");
-          }
-
-          @Override
-          public void onComplete() {
-            Timber.d("completed");
-          }
-        };
-
-    Flowable.combineLatest(
-            _emailChangeObservable,
-            _passwordChangeObservable,
-            _numberChangeObservable,
-            (newEmail, newPassword, newNumber) -> {
-              boolean emailValid = !isEmpty(newEmail) && EMAIL_ADDRESS.matcher(newEmail).matches();
-              if (!emailValid) {
-                _email.setError("Invalid Email!");
-              }
-
-              boolean passValid = !isEmpty(newPassword) && newPassword.length() > 8;
-              if (!passValid) {
-                _password.setError("Invalid Password!");
-              }
-
-              boolean numValid = !isEmpty(newNumber);
-              if (numValid) {
-                int num = Integer.parseInt(newNumber.toString());
-                numValid = num > 0 && num <= 100;
-              }
-              if (!numValid) {
-                _number.setError("Invalid Number!");
-              }
-
-              return emailValid && passValid && numValid;
-            })
-        .subscribe(_disposableObserver);
-  }
+                            boolean numValid = !isEmpty(newNumber);
+                            if (numValid) {
+                                int num = Integer.parseInt(newNumber.toString());
+                                numValid = num > 0 && num <= 100;
+                            }
+                            if (!numValid) {
+                                binding.demoComblNum.setError("Invalid Number!");
+                            }
+                            return emailValid && passValid && numValid;
+                        })
+                .subscribe(_disposableObserver);
+    }
 }

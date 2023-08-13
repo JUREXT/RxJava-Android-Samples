@@ -4,46 +4,56 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import com.morihacky.android.rxjava.R;
 
-import butterknife.Unbinder;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.morihacky.android.rxjava.R;
+import com.morihacky.android.rxjava.databinding.FragmentConcurrencySchedulersBinding;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
-import java.util.ArrayList;
-import java.util.List;
 import timber.log.Timber;
 
-public class ConcurrencyWithSchedulersDemoFragment extends BaseFragment {
+import java.util.ArrayList;
+import java.util.List;
 
-  @BindView(R.id.progress_operation_running)
-  ProgressBar _progress;
+public class ConcurrencyWithSchedulersDemoFragment extends Fragment {
 
-  @BindView(R.id.list_threading_log)
-  ListView _logsList;
+  private FragmentConcurrencySchedulersBinding binding;
 
   private LogAdapter _adapter;
   private List<String> _logs;
-  private CompositeDisposable _disposables = new CompositeDisposable();
-  private Unbinder unbinder;
+  private final CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+  @Override
+  public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    binding = FragmentConcurrencySchedulersBinding.inflate(inflater, container, false);
+    return binding.getRoot();
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    initListeners();
+  }
+
+  private void initListeners() {
+    binding.btnStartOperation.setOnClickListener(view -> startLongOperation());
+  }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
-    unbinder.unbind();
-    _disposables.clear();
+    compositeDisposable.clear();
   }
 
   @Override
@@ -52,18 +62,9 @@ public class ConcurrencyWithSchedulersDemoFragment extends BaseFragment {
     _setupLogger();
   }
 
-  @Override
-  public View onCreateView(
-      LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-    View layout = inflater.inflate(R.layout.fragment_concurrency_schedulers, container, false);
-    unbinder = ButterKnife.bind(this, layout);
-    return layout;
-  }
 
-  @OnClick(R.id.btn_start_operation)
   public void startLongOperation() {
-
-    _progress.setVisibility(View.VISIBLE);
+    binding.progressOperationRunning.setVisibility(View.VISIBLE);
     _log("Button Clicked");
 
     DisposableObserver<Boolean> d = _getDisposableObserver();
@@ -73,7 +74,7 @@ public class ConcurrencyWithSchedulersDemoFragment extends BaseFragment {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(d);
 
-    _disposables.add(d);
+    compositeDisposable.add(d);
   }
 
   private Observable<Boolean> _getObservable() {
@@ -97,14 +98,14 @@ public class ConcurrencyWithSchedulersDemoFragment extends BaseFragment {
       @Override
       public void onComplete() {
         _log("On complete");
-        _progress.setVisibility(View.INVISIBLE);
+        binding.progressOperationRunning.setVisibility(View.INVISIBLE);
       }
 
       @Override
       public void onError(Throwable e) {
         Timber.e(e, "Error in RxJava Demo concurrency");
         _log(String.format("Boo! Error %s", e.getMessage()));
-        _progress.setVisibility(View.INVISIBLE);
+        binding.progressOperationRunning.setVisibility(View.INVISIBLE);
       }
 
       @Override
@@ -149,14 +150,14 @@ public class ConcurrencyWithSchedulersDemoFragment extends BaseFragment {
   private void _setupLogger() {
     _logs = new ArrayList<>();
     _adapter = new LogAdapter(getActivity(), new ArrayList<>());
-    _logsList.setAdapter(_adapter);
+    binding.listThreadingLog.setAdapter(_adapter);
   }
 
   private boolean _isCurrentlyOnMainThread() {
     return Looper.myLooper() == Looper.getMainLooper();
   }
 
-  private class LogAdapter extends ArrayAdapter<String> {
+  private static class LogAdapter extends ArrayAdapter<String> {
 
     public LogAdapter(Context context, List<String> logs) {
       super(context, R.layout.item_log, R.id.item_log, logs);
