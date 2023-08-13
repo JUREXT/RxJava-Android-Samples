@@ -24,9 +24,9 @@ import com.morihacky.android.rxjava.databinding.FragmentNetworkDetectorBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.processors.PublishProcessor;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.processors.PublishProcessor;
 
 public class NetworkDetectorFragment extends Fragment {
 
@@ -62,7 +62,7 @@ public class NetworkDetectorFragment extends Fragment {
         super.onStart();
         publishProcessor = PublishProcessor.create();
         disposable = publishProcessor
-                .startWith(getConnectivityStatus(requireActivity()))
+                //.startWith(getConnectivityStatus(requireActivity()))
                 .distinctUntilChanged()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

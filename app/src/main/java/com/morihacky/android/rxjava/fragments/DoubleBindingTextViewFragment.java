@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment;
 
 import com.morihacky.android.rxjava.databinding.FragmentDoubleBindingTextviewBinding;
 
-import io.reactivex.disposables.Disposable;
-import io.reactivex.processors.PublishProcessor;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.processors.PublishProcessor;
 
 public class DoubleBindingTextViewFragment extends Fragment {
 

@@ -4,8 +4,8 @@ import static java.lang.String.format;
 
 import android.text.TextUtils;
 
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
+import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
@@ -13,13 +13,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class GithubService {
 
-//    private GithubService() {
-//    }
-
     public static GithubApi createGithubService(final String githubToken) {
         Retrofit.Builder builder =
                 new Retrofit.Builder()
-                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                        .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                         .addConverterFactory(GsonConverterFactory.create())
                         .baseUrl("https://api.github.com");
 

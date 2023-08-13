@@ -12,12 +12,6 @@ import android.widget.ListView
 import androidx.fragment.app.Fragment
 import com.morihacky.android.rxjava.R
 import com.morihacky.android.rxjava.databinding.FragmentBufferBinding
-import io.reactivex.Flowable
-import io.reactivex.functions.Consumer
-import io.reactivex.functions.Function
-import org.reactivestreams.Publisher
-import java.util.Random
-import java.util.concurrent.Callable
 
 class UsingFragment : Fragment() {
 
@@ -25,7 +19,7 @@ class UsingFragment : Fragment() {
 
     private lateinit var _logs: MutableList<String>
     private lateinit var _logsList: ListView
-    private lateinit var _adapter: UsingFragment.LogAdapter
+    private lateinit var _adapter: LogAdapter
 
 
     override fun onCreateView(
@@ -50,23 +44,23 @@ class UsingFragment : Fragment() {
     }
 
     private fun executeUsingOperation() {
-        val resourceSupplier = Callable<Realm> { Realm() }
-        val sourceSupplier = Function<Realm, Publisher<Int>> { realm ->
-            Flowable.just(true)
-                .map {
-                    realm.doSomething()
-                    // i would use the copyFromRealm and change it to a POJO
-                    Random().nextInt(50)
-                }
-        }
-        val disposer = Consumer<Realm> { realm ->
-            realm.clear()
-        }
-
-        Flowable.using(resourceSupplier, sourceSupplier, disposer)
-            .subscribe({ i ->
-                //log("got a value $i - (look at the logs)")
-            })
+//        val resourceSupplier = Callable<Realm> { Realm() }
+//        val sourceSupplier = Function<Realm, Publisher<Int>> { realm ->
+//            Flowable.just(true)
+//                .map {
+//                    realm.doSomething()
+//                    // i would use the copyFromRealm and change it to a POJO
+//                    Random().nextInt(50)
+//                }
+//        }
+//        val disposer = Consumer<Realm> { realm ->
+//            realm.clear()
+//        }
+//
+//        Flowable.using(resourceSupplier, sourceSupplier, disposer)
+//            .subscribe { i ->
+//                //log("got a value $i - (look at the logs)")
+//            }
     }
 
     inner class Realm {

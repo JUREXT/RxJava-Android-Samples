@@ -13,13 +13,13 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.jakewharton.rxbinding2.widget.RxTextView;
+import com.jakewharton.rxbinding4.widget.RxTextView;
 import com.morihacky.android.rxjava.R;
 import com.morihacky.android.rxjava.databinding.FragmentFormValidationCombLatestBinding;
 
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
-import io.reactivex.subscribers.DisposableSubscriber;
+import io.reactivex.rxjava3.core.BackpressureStrategy;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.subscribers.DisposableSubscriber;
 import timber.log.Timber;
 
 public class FormValidationCombineLatestFragment extends Fragment {

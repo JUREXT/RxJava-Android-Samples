@@ -10,13 +10,12 @@ import android.view.ViewGroup
 import android.widget.ListView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
 import com.morihacky.android.rxjava.databinding.FragmentRotationPersistBinding
 import com.morihacky.android.rxjava.ext.plus
 import com.morihacky.android.rxjava.wiring.LogAdapter
-import io.reactivex.Flowable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
 class RotationPersist3Fragment : Fragment() { // TODO: Fx problems with view-model.

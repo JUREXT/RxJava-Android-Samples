@@ -18,11 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.processors.PublishProcessor;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.processors.PublishProcessor;
 
 public class PaginationAutoFragment extends Fragment {
 
@@ -68,8 +68,7 @@ public class PaginationAutoFragment extends Fragment {
         super.onStart();
         _disposables = new CompositeDisposable();
 
-        Disposable d2 =
-                _paginator
+        Disposable d2 = _paginator
                         .onBackpressureDrop()
                         .doOnNext(
                                 i -> {

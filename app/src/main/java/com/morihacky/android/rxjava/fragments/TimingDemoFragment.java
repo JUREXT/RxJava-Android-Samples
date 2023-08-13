@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Flowable;
-import io.reactivex.subscribers.DefaultSubscriber;
-import io.reactivex.subscribers.DisposableSubscriber;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.subscribers.DefaultSubscriber;
+import io.reactivex.rxjava3.subscribers.DisposableSubscriber;
 import timber.log.Timber;
 
 public class TimingDemoFragment extends Fragment {

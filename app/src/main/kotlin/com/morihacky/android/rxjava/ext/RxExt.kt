@@ -1,7 +1,7 @@
 package com.morihacky.android.rxjava.ext
 
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
 
 operator fun CompositeDisposable.plus(disposable: Disposable): CompositeDisposable {
     add(disposable)

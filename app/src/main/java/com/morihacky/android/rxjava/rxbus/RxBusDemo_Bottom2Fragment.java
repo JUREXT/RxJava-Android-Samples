@@ -16,9 +16,9 @@ import com.morihacky.android.rxjava.databinding.FragmentRxbusBottomBinding;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 public class RxBusDemo_Bottom2Fragment extends Fragment {
 
@@ -59,10 +59,9 @@ public class RxBusDemo_Bottom2Fragment extends Fragment {
         _disposables.add(
                 debouncedBufferEmitter
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                taps -> {
-                                    _showTapCount(taps.size());
-                                }));
+                        .subscribe(taps -> {
+                            _showTapCount(taps.size());
+                        }));
     }
 
     @Override

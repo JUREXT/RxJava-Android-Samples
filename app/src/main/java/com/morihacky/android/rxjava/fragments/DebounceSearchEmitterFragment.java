@@ -16,8 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.jakewharton.rxbinding2.widget.RxTextView;
-import com.jakewharton.rxbinding2.widget.TextViewTextChangeEvent;
+import com.jakewharton.rxbinding4.widget.RxTextView;
+import com.jakewharton.rxbinding4.widget.TextViewTextChangeEvent;
 import com.morihacky.android.rxjava.R;
 import com.morihacky.android.rxjava.databinding.FragmentDebounceBinding;
 
@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableObserver;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.observers.DisposableObserver;
 import timber.log.Timber;
 
 public class DebounceSearchEmitterFragment extends Fragment {
@@ -73,7 +73,7 @@ public class DebounceSearchEmitterFragment extends Fragment {
         _disposable =
                 RxTextView.textChangeEvents(binding.inputTxtDebounce)
                         .debounce(400, TimeUnit.MILLISECONDS) // default Scheduler is Computation
-                        .filter(changes -> isNotNullOrEmpty(changes.text().toString()))
+                        .filter(changes -> isNotNullOrEmpty(changes.toString()))
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeWith(_getSearchObserver());
     }
@@ -96,7 +96,7 @@ public class DebounceSearchEmitterFragment extends Fragment {
 
             @Override
             public void onNext(TextViewTextChangeEvent onTextChangeEvent) {
-                _log(format("Searching for %s", onTextChangeEvent.text().toString()));
+                _log(format("Searching for %s", onTextChangeEvent.toString()));
             }
         };
     }

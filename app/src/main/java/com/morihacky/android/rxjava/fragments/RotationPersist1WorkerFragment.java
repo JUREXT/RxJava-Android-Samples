@@ -3,13 +3,15 @@ package com.morihacky.android.rxjava.fragments;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.morihacky.android.rxjava.MainActivity;
-import io.reactivex.Flowable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.flowables.ConnectableFlowable;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.flowables.ConnectableFlowable;
 
 public class RotationPersist1WorkerFragment extends Fragment {
 
@@ -24,7 +26,7 @@ public class RotationPersist1WorkerFragment extends Fragment {
    * can talk back to the master and send results
    */
   @Override
-  public void onAttach(Context context) {
+  public void onAttach(@NonNull Context context) {
     super.onAttach(context);
 
     _masterFrag =
@@ -50,8 +52,7 @@ public class RotationPersist1WorkerFragment extends Fragment {
       return;
     }
 
-    Flowable<Integer> intsObservable =
-        Flowable.interval(1, TimeUnit.SECONDS).map(Long::intValue).take(20);
+    Flowable<Integer> intsObservable = Flowable.interval(1, TimeUnit.SECONDS).map(Long::intValue).take(20);
 
     _storedIntsFlowable = intsObservable.publish();
     _storedIntsDisposable = _storedIntsFlowable.connect();

@@ -21,11 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import hu.akarnokd.rxjava2.math.MathFlowable;
-import io.reactivex.Flowable;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Function;
-import io.reactivex.subscribers.DisposableSubscriber;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.subscribers.DisposableSubscriber;
 import timber.log.Timber;
 
 public class ExponentialBackoffFragment extends Fragment {
@@ -119,16 +118,17 @@ public class ExponentialBackoffFragment extends Fragment {
                     }
                 };
 
-        Flowable.range(1, 4)
-                .delay(
-                        integer -> {
-                            // Rx-y way of doing the Fibonnaci :P
-                            return MathFlowable.sumInt(Flowable.range(1, integer))
-                                    .flatMap(targetSecondDelay ->
-                                            Flowable.just(integer).delay(targetSecondDelay, TimeUnit.SECONDS));
-                        })
-                .doOnSubscribe(s -> _log(String.format("Execute 4 tasks with delay - time now: [xx:%02d]", _getSecondHand())))
-                .subscribe(disposableSubscriber);
+//        Flowable.range(1, 4)
+//                .delay(
+//                        integer -> {
+//                            // Rx-y way of doing the Fibonnaci :P
+//                            return MathFlowable.sumInt(Flowable.range(1, integer))
+//                                    .flatMap(targetSecondDelay ->
+//                                            Flowable.just(integer).delay(targetSecondDelay, TimeUnit.SECONDS));
+//                        })
+//                .doOnSubscribe(s -> _log(String.format("Execute 4 tasks with delay - time now: [xx:%02d]", _getSecondHand())))
+
+                //.subscribe(disposableSubscriber);
 
         _disposables.add(disposableSubscriber);
     }

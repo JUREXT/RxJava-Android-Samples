@@ -10,11 +10,10 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
-import com.jakewharton.rx.replayingShare
 import com.morihacky.android.rxjava.R
 import com.morihacky.android.rxjava.databinding.FragmentMulticastPlaygroundBinding
-import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
 class MulticastPlaygroundFragment : Fragment() {
@@ -164,7 +163,7 @@ class MulticastPlaygroundFragment : Fragment() {
 
                         4 -> {
                             binding.msgText.setText(R.string.msg_demo_multicast_replayingShare)
-                            sourceObservable.replayingShare()
+                            sourceObservable.replay()
                         }
 
                         else -> throw RuntimeException("got to pick an op yo!")

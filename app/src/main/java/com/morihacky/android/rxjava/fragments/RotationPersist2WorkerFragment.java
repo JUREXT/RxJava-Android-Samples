@@ -7,9 +7,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.morihacky.android.rxjava.MainActivity;
-import io.reactivex.Flowable;
-import io.reactivex.processors.PublishProcessor;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.processors.PublishProcessor;
 
 public class RotationPersist2WorkerFragment extends Fragment {
 

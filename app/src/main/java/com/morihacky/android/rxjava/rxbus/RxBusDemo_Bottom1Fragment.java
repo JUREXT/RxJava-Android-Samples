@@ -14,7 +14,8 @@ import androidx.fragment.app.Fragment;
 import com.morihacky.android.rxjava.MainActivity;
 import com.morihacky.android.rxjava.databinding.FragmentRxbusBottomBinding;
 
-import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+
 
 public class RxBusDemo_Bottom1Fragment extends Fragment {
 

@@ -21,9 +21,9 @@ import com.morihacky.android.rxjava.wiring.LogAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Flowable;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.subscribers.DisposableSubscriber;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.subscribers.DisposableSubscriber;
 import timber.log.Timber;
 
 public class RotationPersist1Fragment extends Fragment implements IAmYourMaster {
